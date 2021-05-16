@@ -20,6 +20,7 @@ app.get('/auth', async (req, res) => {
       grantType: 'password',
       clientId: 'node-microservice',
       totp: '123456',
+      clientSecret: 'fc296488-8d24-4989-86e2-9c99965a7323',
     });
 
     res.status(200).send({
