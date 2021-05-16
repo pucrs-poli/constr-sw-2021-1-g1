@@ -1,4 +1,5 @@
 const express = require('express');
+const kcAdminClient = require('./keycloak-config');
 const app = express();
 
 const port = 8080;
@@ -9,6 +10,25 @@ app.listen(port, () => {
 
 app.get('/test', function (req, res) {
   res.send('Hello');
+});
+
+app.get('/auth', async (req, res) => {
+  try {
+    await kcAdminClient.auth({
+      username: 'biancacm',
+      password: 'teste123',
+      grantType: 'password',
+      clientId: 'node-microservice',
+      totp: '123456',
+    });
+
+    res.status(200).send({
+      accessToken: kcAdminClient.accessToken,
+      refreshToken: kcAdminClient.refreshToken,
+    });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 // Returns all users from keycloak

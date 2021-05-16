@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/pucrs-poli/constr-sw-2021-1-g1#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "dotenv": "^9.0.2",
+    "express": "^4.17.1",
+    "keycloak-admin": "^1.14.16"
   }
 }
