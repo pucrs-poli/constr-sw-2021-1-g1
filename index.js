@@ -38,6 +38,39 @@ app.get('/users', async function (req, res) {
   res.send(users);
 });
 
+app.put('/users/:id', async function (req, res) {
+  console.log(req);
+  try {  
+  await kcAdminClient.users.update(
+      {id: req.params.id},
+      {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        requiredActions: [],
+        emailVerified: true,
+      },
+    )
+    res.status(200).send();
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.patch('/users/:id', async function (req, res) {
+  console.log(req);
+  try {  
+  await kcAdminClient.users.update(
+      {id: req.params.id},
+      {
+        password: req.body.password
+      },
+    )
+    res.status(200).send();
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // Returns an user by id
 app.get('/users/:id', async function (req, res, _) {
   try {
