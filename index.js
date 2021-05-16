@@ -9,7 +9,7 @@ app.listen(port, () => {
 });
 
 app.get('/test', function (req, res) {
-  res.send('Hello');
+  res.send('Tested');
 });
 
 app.get('/auth', async (req, res) => {
@@ -33,8 +33,9 @@ app.get('/auth', async (req, res) => {
 });
 
 // Returns all users from keycloak
-app.get('/users', function (req, res) {
-  res.send('Should return all users');
+app.get('/users', async function (req, res) {
+  const users = await kcAdminClient.users.find();
+  res.send(users);
 });
 
 // Returns an user by id
