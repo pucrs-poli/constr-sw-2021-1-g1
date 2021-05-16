@@ -38,39 +38,6 @@ app.get('/users', async function (req, res) {
   res.send(users);
 });
 
-app.put('/users/:id', async function (req, res) {
-  console.log(req);
-  try {  
-  await kcAdminClient.users.update(
-      {id: req.params.id},
-      {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        requiredActions: [],
-        emailVerified: true,
-      },
-    )
-    res.status(200).send();
-  } catch (err) {
-    console.log(err);
-  }
-});
-
-app.patch('/users/:id', async function (req, res) {
-  console.log(req);
-  try {  
-  await kcAdminClient.users.update(
-      {id: req.params.id},
-      {
-        password: req.body.password
-      },
-    )
-    res.status(200).send();
-  } catch (err) {
-    console.log(err);
-  }
-});
-
 // Returns an user by id
 app.get('/users/:id', async function (req, res, _) {
   try {
@@ -82,25 +49,61 @@ app.get('/users/:id', async function (req, res, _) {
   
 });
 
+app.use(express.json());
 app.use(express.urlencoded({
   extended: true,
 }));
 
 // Creates user
-app.post('/users', function (req, res) {
-  const body = req.body;
-  console.log(req);
-  res.send(`Should create an user`);
+app.post('/users', async function (req, res) {
+  console.log(req.body.username);
+  try {
+    await kcAdminClient.users.create({
+      username: req.body.username,
+      email: req.body.email,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      emailVerified: true,
+      enabled: true,
+    });
+    res.status(200).send();
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 // Updates the user data
-app.put('/users/:id', function (req, res) {
-  res.send('Should update the user data');
+app.put('/users/:id', async function (req, res) {
+  console.log(req);
+  try {
+    await kcAdminClient.users.update(
+      { id: req.params.id },
+      {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        requiredActions: [],
+        emailVerified: true,
+      }
+    );
+    res.status(200).send();
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 // Updates the user password
-app.patch('/users/:id', function (req, res) {
-  res.send('Should update the user password');
+app.patch('/users/:id', async function (req, res) {
+  try {
+    await kcAdminClient.users.update(
+      { id: req.params.id },
+      {
+        password: req.body.password,
+      }
+    );
+    res.status(200).send();
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 // Deletes an user by id
