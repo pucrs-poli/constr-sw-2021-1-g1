@@ -39,8 +39,14 @@ app.get('/users', async function (req, res) {
 });
 
 // Returns an user by id
-app.get('/users/:id', async (req, res, _) => {
-  res.send(`Should return the user from id ${req.params.id}`);
+app.get('/users/:id', async function (req, res, _) {
+  try {
+    const user = await kcAdminClient.users.findOne({ id: req.params.id });
+    res.send(user);
+  } catch (err) {
+    console.log(err);
+  }
+  
 });
 
 app.use(express.urlencoded({
