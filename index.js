@@ -104,6 +104,11 @@ app.patch('/users/:id', function (req, res) {
 });
 
 // Deletes an user by id
-app.delete('/users/:id', function (req, res) {
-  res.send(`Should delete ${req.params.id}`);
+app.delete('/users/:id', async function (req, res) {
+  try {
+    await kcAdminClient.users.del({ id: req.params.id });
+    res.status(200).send();
+  } catch (err) {
+    console.log(err)
+  }
 });
