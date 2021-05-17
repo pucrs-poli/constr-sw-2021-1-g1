@@ -1,5 +1,5 @@
 const express = require('express');
-const kcAdminClient = require('./keycloak-config');
+const kcAdminClient = require('./keycloak/keycloak-config');
 const credentials = require('./keycloak-credentials');
 
 const app = express();
