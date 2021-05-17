@@ -1,5 +1,7 @@
 const express = require('express');
 const kcAdminClient = require('./keycloak-config');
+const credentials = require('./keycloak-credentials');
+
 const app = express();
 
 const port = 8080;
@@ -13,14 +15,17 @@ app.get('/test', function (req, res) {
 });
 
 app.get('/auth', async (req, res) => {
+  const { username, password, grantType, clientId, totp, clientSecret } =
+    credentials;
+
   try {
     await kcAdminClient.auth({
-      username: 'biancacm',
-      password: 'teste123',
-      grantType: 'password',
-      clientId: 'node-microservice',
-      totp: '123456',
-      clientSecret: 'fc296488-8d24-4989-86e2-9c99965a7323',
+      username,
+      password,
+      grantType,
+      clientId,
+      totp,
+      clientSecret,
     });
 
     res.status(200).send({
@@ -29,23 +34,34 @@ app.get('/auth', async (req, res) => {
     });
   } catch (err) {
     console.log(err);
+    res.status(500).send(err);
   }
 });
 
 // Returns all users from keycloak
 app.get('/users', async function (req, res) {
-  const users = await kcAdminClient.users.find();
+  let users;
+  try {
+    users = await kcAdminClient.users.find();
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+  
   res.send(users);
 });
 
 // Returns an user by id
 app.get('/users/:id', async function (req, res, _) {
+  let user;
   try {
-    const user = await kcAdminClient.users.findOne({ id: req.params.id });
-    res.send(user);
+    user = await kcAdminClient.users.findOne({ id: req.params.id });
   } catch (err) {
     console.log(err);
+    res.status(500).send(err);
   }
+
+  res.status(200).send(user);
   
 });
 
@@ -56,62 +72,76 @@ app.use(express.urlencoded({
 
 // Creates user
 app.post('/users', async function (req, res) {
-  console.log(req.body.username);
+  const { username, email, firstName, lastName } = req.body;
+  let response;
   try {
-    await kcAdminClient.users.create({
-      username: req.body.username,
-      email: req.body.email,
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
+    response = await kcAdminClient.users.create({
+      username,
+      email,
+      firstName,
+      lastName,
       emailVerified: true,
       enabled: true,
     });
-    res.status(200).send();
   } catch (err) {
     console.log(err);
+    res.status(500).send(err);
   }
+
+  res.status(200).send(response);
 });
 
 // Updates the user data
 app.put('/users/:id', async function (req, res) {
-  console.log(req);
+  const { firstName, lastName } = req.body;
+  let response;
   try {
-    await kcAdminClient.users.update(
+    response = await kcAdminClient.users.update(
       { id: req.params.id },
       {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
+        firstName,
+        lastName,
         requiredActions: [],
         emailVerified: true,
       }
     );
-    res.status(200).send();
   } catch (err) {
     console.log(err);
+    res.status(500).send(err);
   }
+
+  res.status(200).send(response);
 });
 
 // Updates the user password
 app.patch('/users/:id', async function (req, res) {
+  const { password } = req.body;
+  const { id } = req.params;
+  let response;
   try {
-    await kcAdminClient.users.update(
-      { id: req.params.id },
+    response = await kcAdminClient.users.update(
+      { id },
       {
-        password: req.body.password,
+        password,
       }
     );
-    res.status(200).send();
   } catch (err) {
     console.log(err);
+    res.status(500).send(err);
   }
+
+  res.status(200).send(response);
 });
 
 // Deletes an user by id
 app.delete('/users/:id', async function (req, res) {
+  let response;
   try {
-    await kcAdminClient.users.del({ id: req.params.id });
-    res.status(200).send();
+    response = await kcAdminClient.users.del({ id: req.params.id });
   } catch (err) {
-    console.log(err)
+    console.log(err);
+    res.status(500).send(err);
   }
+
+  res.status(200).send(response);
 });
