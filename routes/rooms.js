@@ -62,7 +62,15 @@ roomsRouter.patch('/rooms/:id', async function (req, res) {
 
   try {
     await roomReturn.save();
-    res.status(STATUS_CODE.success).json(roomReturn);
+    if (number || description || maxCapacity || type)
+      res.status(STATUS_CODE.success).json(roomReturn);
+    else {
+      res
+        .status(STATUS_CODE.precondition_failed)
+        .json({ error: 'Invalid attributes provided' });
+      res.end();
+      return;
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
     res.end();

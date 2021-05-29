@@ -26,6 +26,20 @@ test('should update an existing room and return code 200', async () => {
     .expect(200);
 });
 
+test('should not update a room that does not exist', async () => {
+  let invalidRoomID = '60b155555555555555555';
+
+  await request(app)
+    .put(`/api/rooms/${invalidRoomID}`)
+    .send({
+      number: 104,
+      description: 'Sala possui 3 projetores',
+      maxCapacity: 100,
+      type: 'Auditório',
+    })
+    .expect(404);
+});
+
 test('should update attributes of an existing room', async () => {
   await request(app)
     .patch(`/api/rooms/${roomID}`)
@@ -33,4 +47,13 @@ test('should update attributes of an existing room', async () => {
       type: 'Sala',
     })
     .expect(200);
+});
+
+test('should not update an attribute that does not exist', async () => {
+  await request(app)
+    .patch(`/api/rooms/${roomID}`)
+    .send({
+      room_type: 'Sala',
+    })
+    .expect(412);
 });

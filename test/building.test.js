@@ -2,7 +2,7 @@ const request = require('supertest');
 const app = require('../app');
 
 // Information to be used in the tests below;
-let buildingID = '60b1afd2192c2767d666b3c1';
+let buildingID = '60b1afd2192c2767d666b3c1'; // temporário, troque por um ID válido local, deixar só let buildingID; quando tiver o beforeAll e afterAll funcionando
 
 beforeAll(() => {
   // usar rota de POST aqui pra adicionar dados de teste, adicionar pelo menos 1 building
