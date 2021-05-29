@@ -1,15 +1,20 @@
-```
-npm install
-npm start
-```
+# Índice
+* [Tecnologias](#tecnologias)
+* [Instalações](#instalações)
+* [Setup](#setup)
+
+# Tecnologias
+Este projeto foi criado com:
+* JavaScript
+
 # Instalações
-## MongoDB
+* MongoDB
     https://www.mongodb.com/try/download/community
 
-## Docker
+* Docker
     https://docs.docker.com/docker-for-windows/install/
     
-### MongoDB em um container docker
+* MongoDB em um container docker
 
 1. Criar volume no docker para persistir dados gerados pelo container
 
@@ -51,5 +56,10 @@ mongo
 
 ![alt text](images/docker5.png)
 
-
+# Setup
+Para executar o projeto, utilize os seguintes comandos:
+```
+$ npm install
+$ npm start
+```
 http://ec2-3-23-112-58.us-east-2.compute.amazonaws.com:8080/test
