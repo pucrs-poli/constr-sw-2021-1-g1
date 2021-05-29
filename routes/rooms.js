@@ -18,10 +18,10 @@ roomsRouter.put('/rooms/:id', function (req, res) {
     function (err) {
       if (err) {
         checkErrorMessage(err, res);
+      } else {
+        res.status(STATUS_CODE.success).json(req.body);
+        res.end();
       }
-
-      res.status(STATUS_CODE.success).json(req.body);
-      res.end();
     }
   );
 });

@@ -1,6 +1,8 @@
+const STATUS_CODE = require('../utils/constants');
+
 const checkErrorMessage = (err, res) => {
   if (err.name == 'CastError' || err.name == 'ValidationError') {
-    if (err.kind == 'ObjectID') {
+    if (err.kind == 'ObjectId') {
       res.status(STATUS_CODE.not_found).json({ error: err });
       res.end();
       return;

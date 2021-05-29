@@ -37,9 +37,10 @@ buildingsRouter.put('/buildings/:id', function (req, res) {
     function (err, doc) {
       if (err) {
         checkErrorMessage(err, res);
+      } else {
+        res.status(STATUS_CODE.success).json(req.body);
+        res.end();
       }
-      res.status(STATUS_CODE.success).json(req.body);
-      res.end();
     }
   );
 });
@@ -89,8 +90,6 @@ buildingsRouter.patch('/buildings/:id', async function (req, res) {
     if (err) {
       checkErrorMessage(err, res);
     }
-    res.status(500).json({ error: err });
-    res.end();
     return;
   }
 });
