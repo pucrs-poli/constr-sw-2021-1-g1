@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/api_constr');
+const mongoose = require('./connection');
 
 // _id is added by default
 const buildingsSchema = new mongoose.Schema(
