@@ -159,6 +159,21 @@ router.patch('/buildings/:id', async function (req, res) {
 
 // Start of rooms routes
 
+
+router.get('/rooms', function(req, res){
+  const db = require('./db/rooms');
+  const buildings = db.Mongoose.model('rooms', db.RoomsSchema, 'rooms');
+  
+  const type = req.query.type;
+  
+  buildings.find({type:type})
+  .lean()
+  .exec(function(e, docs){
+    res.status(STATUS_CODE.success).json(docs);
+    res.end;
+  });
+});
+
 router.get('/rooms/findBy',function(req,res){
   const db = require('./db/rooms');
   const buildings = db.Mongoose.model('rooms', db.RoomsSchema, 'rooms');
