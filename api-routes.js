@@ -11,7 +11,26 @@ const STATUS_CODE = {
   success: 200,
   created: 201,
   not_found: 404,
+  precondition_failed: 412,
 };
+
+const checkErrorMessage = (err, res) => {
+  if (err.name == 'CastError' || err.name == 'ValidationError') {
+    if (err.kind == 'ObjectID') {
+      res.status(STATUS_CODE.not_found).json({ error: err });
+      res.end();
+      return;
+    } else {
+      res.status(STATUS_CODE.precondition_failed).json({ error: err });
+      res.end();
+      return;
+    }
+  }
+
+  res.status(500).json({ error: err.message });
+  res.end();
+  return;
+}
 
 // Start of buildings routes
 
@@ -45,9 +64,7 @@ router.put('/buildings/:id', function (req, res) {
     { upsert: true },
     function (err, doc) {
       if (err) {
-        res.status(500).json({ error: err.message });
-        res.end();
-        return;
+        checkErrorMessage(err, res);
       }
       res.status(STATUS_CODE.success).json(req.body);
       res.end();
@@ -72,7 +89,7 @@ router.patch('/buildings/:id', async function (req, res) {
   try {
    buildingReturn = await buildings.findById(req.params.id); 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(STATUS_CODE.not_found).json({ error: err });
     res.end();
     return;
   }
@@ -97,7 +114,10 @@ router.patch('/buildings/:id', async function (req, res) {
     await buildingReturn.save();
     res.status(STATUS_CODE.success).json(buildingReturn);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    if (err) {
+      checkErrorMessage(err, res);
+    }
+    res.status(500).json({ error: err });
     res.end();
     return;
   }
@@ -118,12 +138,11 @@ router.put('/rooms/:id', function (req, res) {
     { _id: req.params.id },
     req.body,
     { upsert: true },
-    function (err, doc) {
+    function (err) {
       if (err) {
-        res.status(500).json({ error: err.message });
-        res.end();
-        return;
+        checkErrorMessage(err, res);
       }
+
       res.status(STATUS_CODE.success).json(req.body);
       res.end();
     }
