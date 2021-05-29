@@ -1,9 +1,10 @@
 const STATUS_CODE = require('../utils/constants');
 
 const checkErrorMessage = (err, res) => {
-  if (err.name == 'CastError' || err.name == 'ValidationError') {
-    if (err.kind == 'ObjectId') {
-      res.status(STATUS_CODE.not_found).json({ error: err });
+  const patchError = err.message.includes("Cannot read property 'save' of null");
+  if (err.name == 'CastError' || err.name == 'ValidationError' || patchError) {
+    if (err.kind == 'ObjectId' || patchError) {
+      res.status(STATUS_CODE.not_found).json({ error: 'Not found' });
       res.end();
       return;
     } else {
@@ -15,7 +16,6 @@ const checkErrorMessage = (err, res) => {
 
   res.status(500).json({ error: err.message });
   res.end();
-  return;
 };
 
 module.exports = checkErrorMessage;

@@ -85,7 +85,13 @@ buildingsRouter.patch('/buildings/:id', async function (req, res) {
 
   try {
     await buildingReturn.save();
-    res.status(STATUS_CODE.success).json(buildingReturn);
+    if (floors || name || description || maxCapacity)
+      res.status(STATUS_CODE.success).json(buildingReturn);
+    else {
+      res.status(STATUS_CODE.precondition_failed).json({ error: 'Invalid attributes provided' });
+      res.end();
+      return;
+    }
   } catch (err) {
     if (err) {
       checkErrorMessage(err, res);

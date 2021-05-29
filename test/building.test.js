@@ -26,6 +26,20 @@ test('should update an existing building and return code 200', async () => {
     .expect(200);
 });
 
+test('should not update an building that does not exist', async () => {
+  let invalidBuildingID = '60b155555555555555555';
+
+  await request(app)
+    .put(`/api/buildings/${invalidBuildingID}`)
+    .send({
+      floors: 5,
+      name: 'Prédio 32',
+      description: 'Escola Politécnica da PUCRS',
+      maxCapacity: 4999,
+    })
+    .expect(404);
+});
+
 test('should update attributes of an existing building', async () => {
   await request(app)
     .patch(`/api/buildings/${buildingID}`)
@@ -33,4 +47,24 @@ test('should update attributes of an existing building', async () => {
       name: 'Prédio 12',
     })
     .expect(200);
+});
+
+test('should not update an attribute that does not exist', async () => {
+  await request(app)
+    .patch(`/api/buildings/${buildingID}`)
+    .send({
+      attribute: 'Prédio 22',
+    })
+    .expect(412);
+});
+
+test('should not update attributes from a building that does not exist', async () => {
+  let invalidBuildingID = '60b155555555555555555';
+
+  await request(app)
+    .patch(`/api/buildings/${invalidBuildingID}`)
+    .send({
+      attribute: 'Prédio 22',
+    })
+    .expect(404);
 });
