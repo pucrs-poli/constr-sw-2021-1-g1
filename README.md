@@ -9,7 +9,7 @@ npm start
 ## Docker
     https://docs.docker.com/docker-for-windows/install/
     
-### MongoDb em um container docker
+### MongoDB em um container docker
 
 1. Criar volume no docker para persistir dados gerados pelo container
 
