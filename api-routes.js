@@ -7,18 +7,23 @@ router.get('/', function (req, res) {
   });
 });
 
+const STATUS_CODE = {
+  success: 200,
+  created: 201,
+  not_found: 404,
+};
 
 // Start of buildings routes
 
 router.get('/buildings/all', function (req, res) {
   const db = require('./db/buildings');
   const buildings = db.Mongoose.model('buildings', db.BuildingsSchema, 'buildings');
+  
   buildings
     .find({})
     .lean()
     .exec(function (e, docs) {
-      console.log(docs);
-      res.json(docs);
+      res.status(STATUS_CODE.success).json(docs);
       res.end();
     });
 });
@@ -44,7 +49,7 @@ router.put('/buildings/:id', function (req, res) {
         res.end();
         return;
       }
-      res.json(req.body);
+      res.status(STATUS_CODE.success).json(req.body);
       res.end();
     }
   );
@@ -90,7 +95,7 @@ router.patch('/buildings/:id', async function (req, res) {
 
   try {
     await buildingReturn.save();
-    res.status(200).json(buildingReturn);
+    res.status(STATUS_CODE.success).json(buildingReturn);
   } catch (err) {
     res.status(500).json({ error: err.message });
     res.end();
@@ -119,7 +124,7 @@ router.put('/rooms/:id', function (req, res) {
         res.end();
         return;
       }
-      res.json(req.body);
+      res.status(STATUS_CODE.success).json(req.body);
       res.end();
     }
   );
@@ -165,7 +170,7 @@ router.patch('/rooms/:id', async function (req, res) {
 
   try {
     await roomReturn.save();
-    res.status(200).json(roomReturn);
+    res.status(STATUS_CODE.success).json(roomReturn);
   } catch (err) {
     res.status(500).json({ error: err.message });
     res.end();
