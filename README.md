@@ -3,11 +3,14 @@
 * [Instalações](#instalações)
 * [Setup](#setup)
 
-# Tecnologias
+## Tecnologias
 Este projeto foi criado com:
 * JavaScript
 
-# Instalações
+## Instalações
+* Postman
+    https://www.postman.com/downloads/
+    
 * MongoDB
     https://www.mongodb.com/try/download/community
 
@@ -56,7 +59,7 @@ mongo
 
 ![alt text](images/docker5.png)
 
-# Setup
+## Setup
 Para executar o projeto, utilize os seguintes comandos:
 ```
 $ npm install
