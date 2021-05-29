@@ -47,6 +47,20 @@ router.get('/buildings/all', function (req, res) {
     });
 });
 
+router.get('/buildings', function(req, res){
+  const db = require('./db/buildings');
+  const buildings = db.Mongoose.model('buildings', db.BuildingsSchema, 'buildings');
+  
+  const name = req.query.name;
+  
+  buildings.find({name:name})
+  .lean()
+  .exec(function(e, docs){
+    res.status(STATUS_CODE.success).json(docs);
+    res.end;
+  });
+});
+
 router.get('/buildings/findBy',function(req,res){
   const db = require('./db/buildings');
   const buildings = db.Mongoose.model('buildings', db.BuildingsSchema, 'buildings');
