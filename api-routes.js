@@ -96,7 +96,6 @@ router.patch('/buildings/:id', async function (req, res) {
     res.end();
     return;
   }
-  
 });
 
 // End of buildings routes
@@ -104,7 +103,7 @@ router.patch('/buildings/:id', async function (req, res) {
 // Start of rooms routes
 
 /**
- * Update an existing building
+ * Update an existing room
  */
 router.put('/rooms/:id', function (req, res) {
   const db = require('./db/rooms');
@@ -126,6 +125,53 @@ router.put('/rooms/:id', function (req, res) {
   );
 });
 
+/**
+ * Update some attributes of an existing room
+ */
+router.patch('/rooms/:id', async function (req, res) {
+  const db = require('./db/rooms');
+  const rooms = db.Mongoose.model(
+    'rooms',
+    db.RoomsSchema,
+    'rooms'
+  );
+
+  const { number, description, maxCapacity, type } = req.body;
+  let roomReturn;
+  
+  try {
+   roomReturn = await rooms.findById(req.params.id); 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+    res.end();
+    return;
+  }
+
+  if (number) {
+    roomReturn.number = number;
+  }
+
+  if (description) {
+    roomReturn.description = description;
+  }
+
+  if (maxCapacity) {
+    roomReturn.maxCapacity = maxCapacity;
+  }
+
+  if (type) {
+    roomReturn.type = type;
+  }
+
+  try {
+    await roomReturn.save();
+    res.status(200).json(roomReturn);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+    res.end();
+    return;
+  }
+});
 
 // End of rooms routes
 
