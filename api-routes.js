@@ -145,6 +145,24 @@ router.patch('/buildings/:id', async function (req, res) {
 
 // Start of rooms routes
 
+router.get('/rooms/findBy',function(req,res){
+  const db = require('./db/rooms');
+  const buildings = db.Mongoose.model('rooms', db.RoomsSchema, 'rooms');
+
+  const number = req.query.number;
+  const description = req.query.description;
+  const maxCapacity = req.query.maxCapacity;
+  const type = req.query.type;
+
+  buildings.
+    find({number:number, type:type, description:description, maxCapacity:maxCapacity})
+    .lean()
+    .exec(function(e, docs){
+      res.status(STATUS_CODE.success).json(docs);
+      res.end();
+    });
+});
+
 /**
  * Update an existing room
  */
