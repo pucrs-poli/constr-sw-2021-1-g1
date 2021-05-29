@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/api_constr');
+require('dotenv').config();
+
+mongoose.connect(process.env.MONGODB_URL);
 
 module.exports = mongoose;
