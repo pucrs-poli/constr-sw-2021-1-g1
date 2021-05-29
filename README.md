@@ -1,11 +1,23 @@
-```
-npm install
-npm start
-```
+# Índice
+* [Tecnologias](#tecnologias)
+* [Instalações](#instalações)
+* [Setup](#setup)
 
-**MongoDb em um container docker**
+## Tecnologias
+Este projeto foi criado com:
+* JavaScript
 
-Pré-requisitos: Istalar Docker Desktop https://docs.docker.com/docker-for-windows/install/
+## Instalações
+* Postman
+    https://www.postman.com/downloads/
+    
+* MongoDB
+    https://www.mongodb.com/try/download/community
+
+* Docker
+    https://docs.docker.com/docker-for-windows/install/
+    
+#### MongoDB em um container docker
 
 1. Criar volume no docker para persistir dados gerados pelo container
 
@@ -29,7 +41,7 @@ docker run --name mongodb -v mongodata:/data/db -d -p 27017:27017 mongo
 docker ps -a
 ```
 
-![alt text](images/docker3.png)]
+![alt text](images/docker3.png)
 
 4.	Rodar container
 
@@ -47,5 +59,10 @@ mongo
 
 ![alt text](images/docker5.png)
 
-
+## Setup
+Para executar o projeto, utilize os seguintes comandos:
+```
+$ npm install
+$ npm start
+```
 http://ec2-3-23-112-58.us-east-2.compute.amazonaws.com:8080/test
