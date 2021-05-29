@@ -12,4 +12,10 @@ app.listen(port, function () {
 });
 
 
+app.use(express.json());
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 app.use('/api', apiRoutes);
