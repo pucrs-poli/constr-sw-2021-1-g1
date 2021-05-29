@@ -2,10 +2,14 @@
 npm install
 npm start
 ```
+# Instalações
+## MongoDB
+    https://www.mongodb.com/try/download/community
 
-**MongoDb em um container docker**
-
-Pré-requisitos: Istalar Docker Desktop https://docs.docker.com/docker-for-windows/install/
+## Docker
+    https://docs.docker.com/docker-for-windows/install/
+    
+### MongoDb em um container docker
 
 1. Criar volume no docker para persistir dados gerados pelo container
 
