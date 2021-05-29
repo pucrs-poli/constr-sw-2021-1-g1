@@ -1,4 +1,4 @@
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/api_constr');
+mongoose.connect('mongodb://127.0.0.1:27017/predios');
 
 module.exports = mongoose;

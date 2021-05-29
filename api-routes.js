@@ -47,6 +47,24 @@ router.get('/buildings/all', function (req, res) {
     });
 });
 
+router.get('/buildings/findBy',function(req,res){
+  const db = require('./db/buildings');
+  const buildings = db.Mongoose.model('buildings', db.BuildingsSchema, 'buildings');
+
+  const floors = req.query.floors;
+  const name = req.query.name;
+  const description = req.query.description;
+  const maxCapacity = req.query.maxCapacity;
+
+  buildings.
+    find({floors:floors, name:name, description:description, maxCapacity:maxCapacity})
+    .lean()
+    .exec(function(e, docs){
+      res.status(STATUS_CODE.success).json(docs);
+      res.end();
+    });
+});
+
 /**
  * Update an existing building
  */
