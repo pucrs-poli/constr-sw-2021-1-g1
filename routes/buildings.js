@@ -1,8 +1,10 @@
 let buildingsRouter = require('express').Router();
 const STATUS_CODE = require('../utils/constants');
 const checkErrorMessage = require('../utils/checkErrorMessage');
+const { success } = require('../utils/constants');
 
 buildingsRouter.get('/buildings/all', function (req, res) {
+  try{
   const db = require('../db/buildings');
   const buildings = db.Mongoose.model(
     'buildings',
@@ -14,35 +16,57 @@ buildingsRouter.get('/buildings/all', function (req, res) {
     .find({})
     .lean()
     .exec(function (e, docs) {
-      res.status(STATUS_CODE.success).json(docs);
+      if(docs.length === 0){
+        res.status(STATUS_CODE.not_found).json({
+          success: false,
+          message: "Buildings not found."
+        })
+      }else{      
+        res.status(STATUS_CODE.success).json(docs);
+      }
       res.end();
     });
-});
-
-/**
- * Update an existing building
- */
-buildingsRouter.put('/buildings/:id', function (req, res) {
-  const db = require('../db/buildings');
-  const buildings = db.Mongoose.model(
-    'buildings',
-    db.BuildingsSchema,
-    'buildings'
-  );
-
-  buildings.findOneAndUpdate(
-    { _id: req.params.id },
-    req.body,
-    { upsert: true },
-    function (err, doc) {
+  }catch(err){
       if (err) {
         checkErrorMessage(err, res);
-      } else {
-        res.status(STATUS_CODE.success).json(req.body);
-        res.end();
       }
+      res.status(500).json({ error: err });
+      res.end();
+      return;
+  }
+});
+
+buildingsRouter.get('/buildings/:id', async function (req, res) {
+  try{
+      const db = require('../db/buildings');
+      const buildings = db.Mongoose.model(
+        'buildings',
+        db.BuildingsSchema,
+        'buildings'
+      );
+
+      buildings
+    .findById(req.params.id)
+    .lean()
+    .exec(function (e, result) {
+
+      if(!result){
+        res.status(STATUS_CODE.not_found).json({
+          success: false,
+          message: "Building not found."
+        })
+      }else{
+        res.status(STATUS_CODE.success).json(result);
+      }
+      res.end();})
+    }catch(err){
+        if (err) {
+          checkErrorMessage(err, res);
+        }
+        res.status(500).json({ error: err });
+        res.end();
+        return;
     }
-  );
 });
 
 /**

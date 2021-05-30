@@ -4,6 +4,75 @@ const checkErrorMessage = require('../utils/checkErrorMessage');
 
 // Start of rooms routes
 
+
+roomsRouter.get('/rooms/all', function (req, res) {
+  try{
+  const db = require('../db/rooms');
+  const rooms = db.Mongoose.model(
+    'rooms',
+    db.RoomsSchema,
+    'rooms'
+  );
+
+  rooms
+    .find({})
+    .lean()
+    .exec(function (e, docs) {
+      if(docs.length === 0){
+        res.status(STATUS_CODE.not_found).json({
+          success: false,
+          message: "Rooms not found."
+        })
+      }else{      
+        res.status(STATUS_CODE.success).json(docs);
+      }
+      res.end();
+    });
+  }catch(err){
+      if (err) {
+        checkErrorMessage(err, res);
+      }
+      res.status(500).json({ error: err });
+      res.end();
+      return;
+  }
+});
+
+roomsRouter.get('/rooms/:id', async function (req, res) {
+  try{
+      const db = require('../db/rooms');
+      const rooms = db.Mongoose.model(
+        'rooms',
+        db.RoomsSchema,
+        'rooms'
+      );
+
+      rooms
+    .findById(req.params.id)
+    .lean()
+    .exec(function (e, result) {
+
+      if(!result){
+        res.status(STATUS_CODE.not_found).json({
+          success: false,
+          message: "rooms not found."
+        })
+      }else{
+        res.status(STATUS_CODE.success).json(result);
+      }
+      res.end();})
+    }catch(err){
+        if (err) {
+          checkErrorMessage(err, res);
+        }
+        res.status(500).json({ error: err });
+        res.end();
+        return;
+    }
+});
+
+
+
 /**
  * Update an existing room
  */
