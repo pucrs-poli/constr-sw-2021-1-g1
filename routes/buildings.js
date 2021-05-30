@@ -126,13 +126,14 @@ buildingsRouter.patch('/buildings/:id', async function (req, res) {
 
 buildingsRouter.post('/buildings/', async function (req, res) {
   try {
+    //pegando os buildings do mongo
     const db = require('../db/buildings');
     const buildings = db.Mongoose.model(
       'buildings',
       db.BuildingsSchema,
       'buildings'
     );
-
+    //declarando as consts necessarias para criar um building
     const {
       floors,
       name,
@@ -140,6 +141,7 @@ buildingsRouter.post('/buildings/', async function (req, res) {
       maxCapacity
     } = req.body
 
+    //vendo se ja existe um building com este id
     const result = await buildings
     .findById(req.params.id)
     .lean()
@@ -157,10 +159,45 @@ buildingsRouter.post('/buildings/', async function (req, res) {
       res.status(STATUS_CODE.success).json({success: true, message: "Building created"});
       return;
     }
-      console.log(result)
   }catch(err){
-
+    res.status(500).json({success: false, message: err});
+    return;
   }
+});
+
+buildingsRouter.delete('/buildings/:id', function (req, res) {
+   try { 
+    //pegando os buildings do mongo
+    const db = require('../db/buildings');
+    const buildings = db.Mongoose.model(
+      'buildings',
+      db.BuildingsSchema,
+      'buildings'
+    );
+    //tentando deletar o building com id recebido por req.params.id
+    buildings.findByIdAndRemove(req.params.id, function(err, result){
+      if (err) {
+        //se houve erro durante a tentativa de delete, error 500
+        res.status(500).json({success: false, message: err});
+        return;
+      }
+      else if (result) {
+        //se houve result é porque deletou corretamente.
+        res.status(STATUS_CODE.success).json({success: true, message: "Building deleted"});
+        return;
+      }
+      else {
+        //se nao é porque nao achou nenhum building com este id
+        res.status(STATUS_CODE.not_found).json({success: false, message: "Building not found"});
+        return;
+      }
+    }) 
+  }
+  catch(err) {
+    res.status(500).json({success: false, message: err});
+    return;
+  }
+
 });
 
 module.exports = buildingsRouter;
