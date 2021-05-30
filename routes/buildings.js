@@ -123,4 +123,44 @@ buildingsRouter.patch('/buildings/:id', async function (req, res) {
     return;
   }
 });
+
+buildingsRouter.post('/buildings/', async function (req, res) {
+  try {
+    const db = require('../db/buildings');
+    const buildings = db.Mongoose.model(
+      'buildings',
+      db.BuildingsSchema,
+      'buildings'
+    );
+
+    const {
+      floors,
+      name,
+      description,
+      maxCapacity
+    } = req.body
+
+    const result = await buildings
+    .findById(req.params.id)
+    .lean()
+    .exec()
+    if (result) {
+      res.status(STATUS_CODE.conflict).json({success: false, message: "Building already exists"});
+    }
+    else {
+      buildings.create({
+        floors,
+        name,
+        description,
+        maxCapacity
+      })
+      res.status(STATUS_CODE.success).json({success: true, message: "Building created"});
+      return;
+    }
+      console.log(result)
+  }catch(err){
+
+  }
+});
+
 module.exports = buildingsRouter;
