@@ -1,8 +1,11 @@
 const request = require('supertest');
 const app = require('../app');
+const STATUS_CODE = require('../utils/constants');
 
 // Information to be used in the tests below;
 let buildingID = '60b1afd2192c2767d666b3c1'; // temporário, troque por um ID válido local, deixar só let buildingID; quando tiver o beforeAll e afterAll funcionando
+let invalidBuildingID = '60b155555555555555555';
+let postAndDeleteIDs;
 
 beforeAll(async () => {
   const building = await request(app)
@@ -16,8 +19,8 @@ beforeAll(async () => {
     buildingID = building.body.id;
 });
 
-afterAll(async () => {
-  await request(app)
+afterAll(() => {
+  request(app)
   .delete(`/api/buildings/${buildingID}`);
 });
 
@@ -47,7 +50,7 @@ test('should update an existing building and return code 200', async () => {
 });
 
 test('should not update an building that does not exist', async () => {
-  let invalidBuildingID = '60b155555555555555555';
+  
 
   await request(app)
     .put(`/api/buildings/${invalidBuildingID}`)
@@ -79,7 +82,6 @@ test('should not update an attribute that does not exist', async () => {
 });
 
 test('should not update attributes from a building that does not exist', async () => {
-  let invalidBuildingID = '60b155555555555555555';
 
   await request(app)
     .patch(`/api/buildings/${invalidBuildingID}`)
@@ -88,3 +90,29 @@ test('should not update attributes from a building that does not exist', async (
     })
     .expect(404);
 });
+
+test('should post the building and return 201', async () => {
+  const building = await request(app)
+  .post('/api/buildings/')
+  .send({
+    floors: 8,
+    name: 'Prédio 25',
+    description: 'teste',
+    maxCapacity: 3000,
+  })
+  .expect(201);
+  postAndDeleteIDs = building.body.id;
+});
+
+test('should delete the building and return 200', async () => {
+  await request(app)
+  .delete(`/api/buildings/${postAndDeleteIDs}`)
+  .expect(200);
+});
+
+test('should not found any building with this ID and return not found', async () => {
+  await request(app)
+  .delete(`/api/buildings/${invalidBuildingID}`)
+  .expect(STATUS_CODE.not_found);
+});
+
