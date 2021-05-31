@@ -21,6 +21,19 @@ afterAll(async () => {
   .delete(`/api/buildings/${buildingID}`);
 });
 
+
+test('test get of all buildings and return code 200', async () => {
+  await request(app)
+    .get(`/api/buildings/all`)
+    .expect(200);
+});
+
+test('test the get by id, using the ID from the building added at beforeAll', async () => {
+  await request(app)
+    .get(`/api/buildings/${buildingID}`)
+    .expect(200);
+});
+
 test('should update an existing building and return code 200', async () => {
   await request(app)
     .put(`/api/buildings/${buildingID}`)
