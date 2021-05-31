@@ -101,7 +101,7 @@ test('should delete the room and return 200', async () => {
   .expect(200);
 });
 
-test('should not found any rom with this ID and return not found', async () => {
+test('should not find any room with this ID and return not found', async () => {
   await request(app)
   .delete(`/api/rooms/${invalidRoomID}`)
   .expect(STATUS_CODE.not_found);

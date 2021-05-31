@@ -110,7 +110,7 @@ test('should delete the building and return 200', async () => {
   .expect(200);
 });
 
-test('should not found any building with this ID and return not found', async () => {
+test('should not find any building with this ID and return not found', async () => {
   await request(app)
   .delete(`/api/buildings/${invalidBuildingID}`)
   .expect(STATUS_CODE.not_found);
