@@ -194,7 +194,7 @@ roomsRouter.post('/rooms/', async function (req, res) {
           maxCapacity,
           type
         })
-        res.status(STATUS_CODE.success).json({success: true, message: "Room created"});
+        res.status(STATUS_CODE.created).json({success: true, message: "Room created"});
         return;
       }
       else {

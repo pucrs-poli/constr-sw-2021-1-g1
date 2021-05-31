@@ -4,14 +4,21 @@ const app = require('../app');
 // Information to be used in the tests below;
 let buildingID = '60b1afd2192c2767d666b3c1'; // temporário, troque por um ID válido local, deixar só let buildingID; quando tiver o beforeAll e afterAll funcionando
 
-beforeAll(() => {
-  // usar rota de POST aqui pra adicionar dados de teste, adicionar pelo menos 1 building
-  // atribuir o valor do id de um objeto criado para buildingID
+beforeAll(async () => {
+  const building = await request(app)
+    .post('/api/buildings/')
+    .send({
+      floors: 5,
+      name: 'Prédio 37',
+      description: 'Escola Politécnica da PUCRS',
+      maxCapacity: 500,
+    });
+    buildingID = building.body.id;
 });
 
-afterAll(() => {
-  // usar rota de DELETE aqui pra remover os dados de teste, remover buildings adicionados ali no início
-  // limpar o valor de buildingID
+afterAll(async () => {
+  await request(app)
+  .delete(`/api/buildings/${buildingID}`);
 });
 
 test('should update an existing building and return code 200', async () => {

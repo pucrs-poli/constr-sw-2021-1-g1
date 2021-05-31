@@ -150,17 +150,18 @@ buildingsRouter.post('/buildings/', async function (req, res) {
       res.status(STATUS_CODE.conflict).json({success: false, message: "Building already exists"});
     }
     else {
-      buildings.create({
+      const building = await buildings.create({
         floors,
         name,
         description,
         maxCapacity
-      })
-      res.status(STATUS_CODE.success).json({success: true, message: "Building created"});
+      });
+      const created = {...{id: building["_id"]}, ...req.body};
+      res.status(STATUS_CODE.created).json(created);
       return;
     }
   }catch(err){
-    res.status(500).json({success: false, message: err});
+    res.status(500).json({ error: err.message });
     return;
   }
 });
