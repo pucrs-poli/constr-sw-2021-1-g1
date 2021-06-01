@@ -55,7 +55,7 @@ roomsRouter.get('/rooms/:id', async function (req, res) {
       if(!result){
         res.status(STATUS_CODE.not_found).json({
           success: false,
-          message: "rooms not found."
+          message: "Rooms not found."
         })
       }else{
         res.status(STATUS_CODE.success).json(result);
@@ -233,12 +233,12 @@ roomsRouter.delete('/rooms/:id', async function (req, res) {
      }
      else if (result) {
        //se houver result, é porque foi deletado corretamente
-       res.status(STATUS_CODE.success).json({success: true, message: "Building deleted"});
+       res.status(STATUS_CODE.success).json({success: true, message: "Room deleted"});
        return;
      }
      else {
        //se nao houver result é porque nao existe um room com este id
-       res.status(STATUS_CODE.not_found).json({success: false, message: "Building not found"});
+       res.status(STATUS_CODE.not_found).json({success: false, message: "Room not found"});
        return;
      }
    }) 
