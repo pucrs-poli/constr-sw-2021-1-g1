@@ -184,12 +184,14 @@ buildingsRouter.delete('/buildings/:id', function (req, res) {
       }
       else if (result) {
         //se houve result é porque deletou corretamente.
-        res.status(STATUS_CODE.success).json({success: true, message: "Building deleted"});
+        res
+          .status(STATUS_CODE.delete_success)
+          .json({ success: true, message: 'Building deleted' });
         return;
       }
       else {
         //se nao é porque nao achou nenhum building com este id
-        res.status(STATUS_CODE.not_found).json({success: false, message: "Building not found"});
+        res.status(STATUS_CODE.not_found).json({ success: false, message: "Building not found" });
         return;
       }
     }) 
