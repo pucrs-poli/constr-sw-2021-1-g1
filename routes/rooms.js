@@ -233,7 +233,9 @@ roomsRouter.delete('/rooms/:id', async function (req, res) {
      }
      else if (result) {
        //se houver result, é porque foi deletado corretamente
-       res.status(STATUS_CODE.success).json({success: true, message: "Building deleted"});
+       res
+         .status(STATUS_CODE.delete_success)
+         .json({ success: true, message: 'Building deleted' });
        return;
      }
      else {
