@@ -12,8 +12,6 @@ RUN yarn install --silent
 
 COPY . /app
 
-RUN yarn build
-
 EXPOSE 8080
 
 CMD [ "yarn", "start" ]
