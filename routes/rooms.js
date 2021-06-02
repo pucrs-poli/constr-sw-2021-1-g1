@@ -4,7 +4,6 @@ const checkErrorMessage = require('../utils/checkErrorMessage');
 
 // Start of rooms routes
 
-
 roomsRouter.get('/rooms/all', function (req, res) {
   try{
   const db = require('../db/rooms');
@@ -18,17 +17,17 @@ roomsRouter.get('/rooms/all', function (req, res) {
     .find({})
     .lean()
     .exec(function (e, docs) {
-      if(docs.length === 0){
+      if (docs.length === 0) {
         res.status(STATUS_CODE.not_found).json({
           success: false,
           message: "Rooms not found."
         })
-      }else{      
+      } else {      
         res.status(STATUS_CODE.success).json(docs);
       }
       res.end();
     });
-  }catch(err){
+  } catch(err) {
       if (err) {
         checkErrorMessage(err, res);
       }
@@ -39,29 +38,30 @@ roomsRouter.get('/rooms/all', function (req, res) {
 });
 
 roomsRouter.get('/rooms/:id', async function (req, res) {
-  try{
-      const db = require('../db/rooms');
-      const rooms = db.Mongoose.model(
-        'rooms',
-        db.RoomsSchema,
-        'rooms'
-      );
+  try {
+    const db = require('../db/rooms');
+    const rooms = db.Mongoose.model(
+      'rooms',
+      db.RoomsSchema,
+      'rooms'
+    );
 
-      rooms
-    .findById(req.params.id)
-    .lean()
-    .exec(function (e, result) {
+    rooms
+      .findById(req.params.id)
+      .lean()
+      .exec(function (e, result) {
 
-      if(!result){
-        res.status(STATUS_CODE.not_found).json({
-          success: false,
-          message: "rooms not found."
-        })
-      }else{
-        res.status(STATUS_CODE.success).json(result);
-      }
-      res.end();})
-    }catch(err){
+        if (!result) {
+          res.status(STATUS_CODE.not_found).json({
+            success: false,
+            message: 'rooms not found.',
+          });
+        } else {
+          res.status(STATUS_CODE.success).json(result);
+        }
+        res.end();
+      });
+    } catch(err) {
         if (err) {
           checkErrorMessage(err, res);
         }
@@ -174,49 +174,59 @@ roomsRouter.post('/rooms/', async function (req, res) {
 
     //vendo se ja existe um room com esse numero no mesmo building
     const roomNumber = await rooms
-    .where("buildingID").equals(buildingID)
-    .where("number").equals(number)
-    .exec()
+      .where("buildingID").equals(buildingID)
+      .where("number").equals(number)
+      .exec();
+
     //vendo se existe o building onde o room vai ser criado
     const buildingById = await buildings
       .findById(buildingID)
       .lean()
-      .exec()
-    console.log(roomNumber)
-    if (buildingById){
+      .exec();
+    
+    if (buildingById) {
       //se existe o building
-      if(roomNumber.length === 0){
+      if (roomNumber && roomNumber.length === 0) {
         //e se o numero ta disponivel
-        rooms.create({
+        const createdRoom = await rooms.create({
           buildingID,
           number,
           description,
           maxCapacity,
-          type
-        })
-        res.status(STATUS_CODE.created).json({success: true, message: "Room created"});
+          type,
+        });
+
+        res.status(STATUS_CODE.created).json(createdRoom);
+        res.end();
         return;
-      }
-      else {
+      } else {
         //se o numero ja existe, error 409: conflict.
-        res.status(STATUS_CODE.conflict).json({success: false, message: "Room number already exists in this building."})
+        res
+          .status(STATUS_CODE.conflict)
+          .json({
+            success: false,
+            message: 'Room number already exists in this building.',
+          });
+        res.end();
         return;
       }
     }
     else {
       //se o building nao existe, building not found.
-      res.status(STATUS_CODE.not_found).json({success: false, message: "Building ID not found."});
+      res.status(STATUS_CODE.not_found).json({ success: false, message: "Building ID not found." });
+      res.end();
       return;
     }
 
-  }catch(err){
-    res.status(500).json({success: false, message: err});
+  } catch(err) {
+    res.status(500).json({ success: false, message: err });
+    res.end();
     return;
   }
 });
 
 roomsRouter.delete('/rooms/:id', async function (req, res) {
-  try { 
+  try {
   //pegando os rooms do mongo
    const db = require('../db/rooms');
    const rooms = db.Mongoose.model(
@@ -225,28 +235,27 @@ roomsRouter.delete('/rooms/:id', async function (req, res) {
      'rooms'
    );
    //tentando deletar o room pelo ID recebido por req.params.id
-   const deleted = await rooms.findByIdAndRemove(req.params.id, function(err, result){
-     if (err) {
-       //se houve algum erro durante a tentativa de delete status 500
-       res.status(500).json({success: false, message: err});
-       return;
-     }
-     else if (result) {
-       //se houver result, é porque foi deletado corretamente
-       res
-         .status(STATUS_CODE.delete_success)
-         .json({ success: true, message: 'Building deleted' });
-       return;
-     }
-     else {
-       //se nao houver result é porque nao existe um room com este id
-       res.status(STATUS_CODE.not_found).json({success: false, message: "Building not found"});
-       return;
-     }
-   }) 
- }
- catch(err) {
-   res.status(500).json({success: false, message: err});
+    await rooms.findByIdAndRemove(
+      { _id: req.params.id },
+      function (err, result) {
+        if (err) {
+          checkErrorMessage(err, res);
+        } else if (result) {
+          //se houver result, é porque foi deletado corretamente
+          res
+            .status(STATUS_CODE.delete_success)
+            .json({ success: true, message: 'Building deleted' });
+          return;
+        } else {
+          //se nao houver result é porque nao existe um room com este id
+          res
+            .status(STATUS_CODE.not_found)
+            .json({ success: false, message: 'Building not found' });
+          return;
+        }
+      }
+    );
+ } catch(err) {
    return;
  }
 

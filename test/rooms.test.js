@@ -1,30 +1,44 @@
 const request = require('supertest');
 const app = require('../app');
+const STATUS_CODE = require('../utils/constants');
 
 // Information to be used in the tests below;
 let roomID = '60b1be52192c2767d666b3c3';
+let buildingID = '60b6c7503c708973d8483098';
 let invalidRoomID = '60b155555555555555555';
 let postAndDeleteIDs;
 
 beforeAll(async () => {
   // usar rota de POST aqui pra adicionar dados de teste, adicionar pelo menos 1 room
+
+  const building = await request(app).post('/api/buildings/').send({
+    floors: 8,
+    name: 'Prédio 12',
+    description: 'Escola Politécnica da PUCRS',
+    maxCapacity: 4999,
+  });
+  buildingID = building.body.id;
+
   // atribuir o valor do id de um objeto criado para roomID
   const room = await request(app)
     .post('/api/rooms/')
     .send({
+      buildingID,
       number: 104,
       description: 'Sala possui 3 projetores',
       maxCapacity: 100,
       type: 'Auditório',
     });
-    roomID = room.body.id;
+  roomID = room.body['_id'];
 });
 
-afterAll(() => {
+afterAll(async () => {
   // usar rota de DELETE aqui pra remover os dados de teste, remover rooms adicionados ali no início
   // limpar o valor de roomID
-  request(app)
-  .delete(`/api/rooms/${roomID}`);
+  await request(app)
+    .delete(`/api/rooms/${roomID}`);
+  
+  await request(app).delete(`/api/buildings/${buildingID}`);
 });
 
 test('test get of all rooms and return code 200', async () => {
@@ -85,20 +99,22 @@ test('should not update an attribute that does not exist', async () => {
 test('should post the room and return 201', async () => {
   const room = await request(app)
   .post('/api/rooms/')
-  .send({
+    .send({
+    buildingID,
     floors: 8,
     name: 'Prédio 25',
     description: 'teste',
     maxCapacity: 3000,
   })
   .expect(201);
-  postAndDeleteIDs = room.body.id;
+  postAndDeleteIDs = room.body['_id'];
 });
 
-test('should delete the room and return 200', async () => {
+test('should delete the room and return 204', async () => {
+  console.log('postAndDeleteIDs', postAndDeleteIDs);
   await request(app)
   .delete(`/api/rooms/${postAndDeleteIDs}`)
-  .expect(200);
+  .expect(204);
 });
 
 test('should not find any room with this ID and return not found', async () => {

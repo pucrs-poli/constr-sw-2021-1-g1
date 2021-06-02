@@ -16,11 +16,11 @@ beforeAll(async () => {
       description: 'Escola Politécnica da PUCRS',
       maxCapacity: 500,
     });
-    buildingID = building.body.id;
+  buildingID = building.body.id;
 });
 
-afterAll(() => {
-  request(app)
+afterAll(async () => {
+  await request(app)
   .delete(`/api/buildings/${buildingID}`);
 });
 
@@ -104,10 +104,10 @@ test('should post the building and return 201', async () => {
   postAndDeleteIDs = building.body.id;
 });
 
-test('should delete the building and return 200', async () => {
+test('should delete the building and return 204', async () => {
   await request(app)
   .delete(`/api/buildings/${postAndDeleteIDs}`)
-  .expect(200);
+  .expect(204);
 });
 
 test('should not find any building with this ID and return not found', async () => {
