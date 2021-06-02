@@ -3,6 +3,7 @@ const STATUS_CODE = require('../utils/constants');
 const checkErrorMessage = require('../utils/checkErrorMessage');
 
 buildingsRouter.get('/buildings/all', function (req, res) {
+  try {
   const db = require('../db/buildings');
   const buildings = db.Mongoose.model(
     'buildings',
@@ -14,9 +15,58 @@ buildingsRouter.get('/buildings/all', function (req, res) {
     .find({})
     .lean()
     .exec(function (e, docs) {
-      res.status(STATUS_CODE.success).json(docs);
+      if(docs.length === 0) {
+        res.status(STATUS_CODE.not_found).json({
+          success: false,
+          message: "Buildings not found."
+        })
+      } else {      
+        res.status(STATUS_CODE.success).json(docs);
+      }
       res.end();
     });
+  } catch(err) {
+      if (err) {
+        checkErrorMessage(err, res);
+      }
+      res.status(500).json({ error: err });
+      res.end();
+      return;
+  }
+});
+
+buildingsRouter.get('/buildings/:id', async function (req, res) {
+  try {
+    const db = require('../db/buildings');
+    const buildings = db.Mongoose.model(
+      'buildings',
+      db.BuildingsSchema,
+      'buildings'
+    );
+
+    buildings
+      .findById(req.params.id)
+      .lean()
+      .exec(function (e, result) {
+
+        if (!result) {
+          res.status(STATUS_CODE.not_found).json({
+            success: false,
+            message: "Building not found."
+          })
+        } else {
+          res.status(STATUS_CODE.success).json(result);
+        }
+        res.end();
+      });
+  } catch (err) {
+      if (err) {
+        checkErrorMessage(err, res);
+      }
+      res.status(500).json({ error: err });
+      res.end();
+      return;
+    }
 });
 
 /**
@@ -99,4 +149,85 @@ buildingsRouter.patch('/buildings/:id', async function (req, res) {
     return;
   }
 });
+
+buildingsRouter.post('/buildings/', async function (req, res) {
+  try {
+    //pegando os buildings do mongo
+    const db = require('../db/buildings');
+    const buildings = db.Mongoose.model(
+      'buildings',
+      db.BuildingsSchema,
+      'buildings'
+    );
+    //declarando as consts necessarias para criar um building
+    const {
+      floors,
+      name,
+      description,
+      maxCapacity
+    } = req.body
+
+    //vendo se ja existe um building com este id
+    const result = await buildings
+      .findById(req.params.id)
+      .lean()
+      .exec();
+
+    if (result) {
+      res.status(STATUS_CODE.conflict).json({ success: false, message: "Building already exists" });
+    }
+    else {
+      const building = await buildings.create({
+        floors,
+        name,
+        description,
+        maxCapacity
+      });
+      const created = {...{id: building["_id"]}, ...req.body};
+      res.status(STATUS_CODE.created).json(created);
+      return;
+    }
+  } catch(err) {
+    res.status(500).json({ error: err.message });
+    return;
+  }
+});
+
+buildingsRouter.delete('/buildings/:id', function (req, res) {
+   try { 
+    //pegando os buildings do mongo
+    const db = require('../db/buildings');
+    const buildings = db.Mongoose.model(
+      'buildings',
+      db.BuildingsSchema,
+      'buildings'
+    );
+    //tentando deletar o building com id recebido por req.params.id
+    buildings.findByIdAndRemove(req.params.id, function(err, result){
+      if (err) {
+        checkErrorMessage(err, res);
+      }
+      else if (result) {
+        //se houve result é porque deletou corretamente.
+        res
+          .status(STATUS_CODE.delete_success)
+          .json({ success: true, message: 'Building deleted' });
+        res.end();
+        return;
+      } else {
+        //se nao é porque nao achou nenhum building com este id
+        res.status(STATUS_CODE.not_found).json({ success: false, message: "Building not found" });
+        res.end();
+        return;
+      }
+    }) 
+  }
+  catch(err) {
+     res.status(500).json({ success: false, message: err });
+     res.end();
+    return;
+  }
+
+});
+
 module.exports = buildingsRouter;
