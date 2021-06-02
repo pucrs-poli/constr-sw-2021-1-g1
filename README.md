@@ -1,6 +1,22 @@
+Documentação da API disponível no [SwaggerHub](https://app.swaggerhub.com/apis/biancacamargomachado/building-and-rooms/3.0).
+
+Pré-requisitos:
+- NodeJS
+- Yarn
+
+Para rodar o projeto local:
+
 ```
-npm install
-npm start
+yarn install
+yarn start
 ```
 
-http://ec2-3-23-112-58.us-east-2.compute.amazonaws.com:8080/test
+Para rodar os testes:
+
+```
+yarn test
+```
+
+## Arquitetura
+
+![diagram](images/diagram.jpeg)
