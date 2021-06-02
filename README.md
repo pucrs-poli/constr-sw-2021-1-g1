@@ -19,4 +19,4 @@ yarn test
 
 ## Arquitetura
 
-![diagram](images/diagram.jpegg)
+![diagram](images/diagram.jpeg)
