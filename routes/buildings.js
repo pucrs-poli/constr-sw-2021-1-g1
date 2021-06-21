@@ -73,12 +73,21 @@ buildingsRouter.get('/buildings/:id', async function (req, res) {
  * Update an existing building
  */
 buildingsRouter.put('/buildings/:id', function (req, res) {
-  const db = require('../db/buildings');
-  const buildings = db.Mongoose.model(
-    'buildings',
-    db.BuildingsSchema,
-    'buildings'
-  );
+  let db;
+  let buildings;
+
+  try {
+    db = require('../db/buildings');
+    buildings = db.Mongoose.model(
+      'buildings',
+      db.BuildingsSchema,
+      'buildings'
+    );
+  } catch(err) {
+    res.status(STATUS_CODE.precondition_failed);
+    res.end();
+    return;
+  }
 
   console.log('buildings', buildings);
   buildings.findOneAndUpdate(
