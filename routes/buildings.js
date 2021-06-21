@@ -80,6 +80,7 @@ buildingsRouter.put('/buildings/:id', function (req, res) {
     'buildings'
   );
 
+  console.log('buildings', buildings);
   buildings.findOneAndUpdate(
     { _id: req.params.id },
     req.body,
