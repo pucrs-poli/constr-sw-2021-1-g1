@@ -1,5 +1,9 @@
 Documentação da API disponível online no [Postman](https://documenter.getpostman.com/view/6621938/TzeajRpq).
- ** aqui você consegue executar usando o ambiente online do Postman, clique em: "Run in Postman" no canto superior direito.
+ ** aqui você consegue executar usando o ambiente online do Postman, seguindo os seguintes passos:
+ - "Run in Postman" no canto superior direito
+ - Faça login
+ - Selecione um workspace
+ - Pronto, você deve ter acesso a collection `Microserviço de buildings/rooms`
 
 API URL: http://ec2-3-141-6-156.us-east-2.compute.amazonaws.com/api/
 
